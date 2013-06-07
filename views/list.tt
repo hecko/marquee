@@ -1,0 +1,5 @@
+<table>
+<% FOREACH e = d -%>
+    <tr><td><% e.name %></td><td><% e.uid %></td></tr>
+<% END -%>
+</table>

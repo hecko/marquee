@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use JSON;
+use Data::Dumper::Concise;
+use Time::HiRes qw<gettimeofday>;
+
+my $uid = gettimeofday();
+$uid =~ s/\.//;
+
+my %hash =(
+    uid => $uid,
+    name => "test",
+    severity => 23,
+    when => time(),
+    message => "this is a basic message",
+    cmdb_ci => 241,
+    source => "test_source",
+    status => 1,
+    description => "marquee is a new monitoring system, message from ".time(),
+    contact_group => "tapaj",
+);
+
+my $json = JSON::XS->new->pretty(1)->indent(1)->encode(\%hash);
+
+die "unable to open file handle" if !open my $fh, ">", "../../var/data/in/$uid.json";
+print $json;
+print $fh $json;
+close($fh);

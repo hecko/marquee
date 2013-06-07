@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+
+# this script processes input json files from data/input
+# directory, changes the contant of the events and writes the
+# data to the appropriate places
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use common::sense;
+use JSON;
+use Data::Dumper::Concise;
+use Path::Class qw<dir>;
+use File::Slurp;
+
+# our internal packages
+use Marquee::Source;
+
+my $dir = dir("../var/data/in/");
+
+for my $child (sort $dir->children) {
+    my $hash = JSON::XS->new->decode(scalar read_file($child));
+
+    # call a method named the same way as the source of the event
+    my $parse = Marquee::Source->${\$hash->{source}}($hash);
+
+    print Dumper $parse;
+
+    die "unable to open file handle" if !open my $fh, ">../var/data/processed/$hash->{marquee_uid}.json";
+    print $fh JSON::XS->new->encode($parse);
+    close($fh);
+}

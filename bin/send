@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use LWP::UserAgent;
+use CGI;
+
+my $ = '098f6bcd4621d373cade4e832627b4f6';
+my $url = 'http://www.md5crack.com/crackmd5.php';
+
+my $ua       = LWP::UserAgent->new();
+my $response = $ua->post( $url, { 'term' => $md5 } );
+my $content  = $response->decoded_content();
+
+my $cgi = CGI->new();
+print $cgi->header(), $content;

@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use Dancer;
+use Data::Dumper::Concise;
+use common::sense;
+use Path::Class qw<dir>;
+use File::Slurp;
+
+use Marquee::Runtime;
+
+set 'logger'      => 'console';
+set 'log'         => 'debug';
+set 'template'    => 'template_toolkit';
+
+get '/' => sub {
+    return 'Hello World!';
+};
+
+any '/add' => sub {
+    my $hash = scalar params;
+    $hash->{uid} = Marquee::Runtime->get_next_uid;
+    $hash->{received} = time;
+
+    if ($hash->{name}) {
+        my $json = to_json($hash);
+        warn "unable to open file handle $!" if !open my $fh, ">", "../var/data/in/$hash->{uid}.json";
+        print $fh $json;
+        close($fh);
+    }
+    return $hash->{uid};
+};
+
+get '/list'=> sub {
+
+    my $dir = dir("../var/data/in/");
+    my @data;
+
+    for my $child (sort $dir->children) {
+        my $json = read_file($child);
+        my $hash = JSON::XS->new->decode($json);
+        push(@data,$hash);
+    }
+
+    return template 'list', { d => \@data };
+};
+
+start;

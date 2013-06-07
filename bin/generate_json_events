@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
 use warnings;
 use strict;
 use JSON;
 use Data::Dumper::Concise;
 use Time::HiRes qw<gettimeofday>;
-
-my $uid = gettimeofday();
-$uid =~ s/\.//;
+use Marquee::Runtime;
 
 my %hash =(
-    uid => $uid,
     name => "test",
     severity => 23,
     when => time(),
@@ -22,9 +22,11 @@ my %hash =(
     contact_group => "tapaj",
 );
 
+$hash{uid} = Marquee::Runtime->get_next_uid;
+
 my $json = JSON::XS->new->pretty(1)->indent(1)->encode(\%hash);
 
-die "unable to open file handle" if !open my $fh, ">", "../../var/data/in/$uid.json";
+die "unable to open file handle" if !open my $fh, ">", "../../var/data/in/$hash{uid}.json";
 print $json;
 print $fh $json;
 close($fh);

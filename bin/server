@@ -38,7 +38,7 @@ get '/list'=> sub {
     my $dir = dir("../var/data/in/");
     my @data;
 
-    for my $child (sort $dir->children) {
+    for my $child (sort $dir->children(no_hidden => 1)) {
         my $json = read_file($child);
         my $hash = JSON::XS->new->decode($json);
         push(@data,$hash);

@@ -18,8 +18,11 @@ use Marquee::Source;
 
 my $dir = dir("../var/data/in/");
 
-for my $child (sort $dir->children) {
+for my $child (sort $dir->children(no_hidden => 1)) {
+    say "Reading $child";
     my $hash = JSON::XS->new->decode(scalar read_file($child));
+
+    next if !$hash->{source};
 
     # call a method named the same way as the source of the event
     my $parse = Marquee::Source->${\$hash->{source}}($hash);

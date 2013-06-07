@@ -1,5 +1,12 @@
+<% USE date %>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
 <table>
-<% FOREACH e = d -%>
-    <tr><td><% e.name %></td><td><% e.uid %></td></tr>
-<% END -%>
+    <tr><th>Name</th><th>Source</th><th>Received</th></tr>
+    <% FOREACH e = d -%>
+    <tr><td><% e.name %></td><td><% e.source %></td><td><% date.format(e.received) %></td></tr>
+    <% END -%>
 </table>
+</html>

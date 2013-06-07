@@ -1,0 +1,8 @@
+cpanm Dancer
+cpanm Data::Dumper::Concise
+cpanm common::sense
+cpanm Path::Class
+cpanm File::Slurp
+cpanm JSON
+cpanm JSON::XS
+cpanm Template

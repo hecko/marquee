@@ -5,11 +5,14 @@ use warnings;
 use LWP::UserAgent;
 use CGI;
 
-my $ = '098f6bcd4621d373cade4e832627b4f6';
-my $url = 'http://www.md5crack.com/crackmd5.php';
+my $url = 'http://localhost:3000/add';
 
 my $ua       = LWP::UserAgent->new();
-my $response = $ua->post( $url, { 'term' => $md5 } );
+my $response = $ua->post( $url, {
+                    name => 'name',
+                    source => 'sender'
+                } );
+
 my $content  = $response->decoded_content();
 
 my $cgi = CGI->new();

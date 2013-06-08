@@ -21,16 +21,22 @@ get '/' => sub {
 
 any '/add' => sub {
     my $hash = scalar params;
+    my $skip = 0;
+    for my $element ( 'name', 'status', 'source' ) {
+        if (!$hash->{$element}) {
+            return "Missing argument $element\n";
+        }
+    }
+
     $hash->{uid} = Marquee::Runtime->get_next_uid;
     $hash->{received} = time;
 
-    if ($hash->{name}) {
-        my $json = to_json($hash);
-        warn "unable to open file handle $!" if !open my $fh, ">", "../var/data/in/$hash->{uid}.json";
-        print $fh $json;
-        close($fh);
-    }
-    return $hash->{uid};
+    my $json = to_json($hash);
+    warn "unable to open file handle $!"
+        if !open my $fh, ">", "../var/data/in/$hash->{uid}.json";
+    print $fh $json;
+    close($fh);
+    return "Thanks!\n".$hash->{uid}."\n";
 };
 
 get '/list'=> sub {

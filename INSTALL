@@ -6,3 +6,6 @@ cpanm File::Slurp
 cpanm JSON
 cpanm JSON::XS
 cpanm Template
+cpanm Text::ASCIITable
+cpanm DateTime
+cpanm Getopt::Long

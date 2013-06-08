@@ -2,15 +2,27 @@
 
 use strict;
 use warnings;
+use Getopt::Long;
 use LWP::UserAgent;
+use Data::Dumper::Concise;
 use CGI;
+use common::sense;
+
+my %opt = ();
+
+GetOptions( \%opt, 'name=s',
+                   'status=s',
+                   'source=s',
+                   'optional:i'
+    ) or die("Error in command line arguments\n");
 
 my $url = 'http://localhost:3000/add';
 
 my $ua       = LWP::UserAgent->new();
 my $response = $ua->post( $url, {
-                    name => 'name',
-                    source => 'sender'
+                    name   => $opt{name},
+                    status => $opt{status},
+                    source => $opt{source}
                 } );
 
 my $content  = $response->decoded_content();

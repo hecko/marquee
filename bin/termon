@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+use Term::ANSIColor;
+use Text::ASCIITable;
+use common::sense;
+use Data::Dumper::Concise;
+use Path::Class qw<dir>;
+use File::Slurp;
+use JSON::XS;
+use DateTime;
+
+
+sub r  {return "\e[31;10m".shift()."\e[m";} # red
+sub g  {return "\e[32;10m".shift()."\e[m";} # green
+sub ye {return "\e[33;10m".shift()."\e[m";} # yellow
+sub ma {return "\e[35;10m".shift()."\e[m";} # magenta
+#sub c  {return "\e[36;10m".shift()."\e[m";} # cyan
+
+sub clear_screen {
+    print "\033[2J";   #clear the screen
+    print "\033[0;0H"; #jump to 0,0
+}
+
+clear_screen();
+
+while (1) {
+    my @files;
+    my %data;
+    my $now = DateTime->now;
+
+    my $dir = dir("../var/data/in/");
+
+    foreach my $child ($dir->children(no_hidden => 1)) {
+        push(@files,$child);
+    }
+
+    my $tb = Text::ASCIITable->new({allowANSI => 1});
+    $tb->setCols( $now->hms, 'Source', 'Name', 'Status');
+    $tb->setColWidth('Info',80);
+
+    foreach my $file (@files) {
+        my $json = read_file($file);
+        my $data = JSON::XS->new->decode($json);
+
+        next if !$data->{received};
+        my $dt = DateTime->from_epoch( epoch => $data->{received} );
+
+        my $c;
+
+        if ($data->{status} eq "ok") {
+            $c = \&g;
+        } else {
+            $c = \&r;
+        }
+        $tb->addRow( $dt->datetime, &$c($data->{source}), &$c($data->{name}), &$c($data->{status}) );
+        $tb->addRowLine();
+    }
+
+    print $tb;
+
+    sleep 2;
+    clear_screen;
+}
